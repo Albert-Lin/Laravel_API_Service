@@ -27,7 +27,7 @@ class CUrl
 			CURLOPT_HTTPHEADER => array(
 				"Cache-Control: no-cache",
 				"Accept-Language: zh-TW,zh,zh-Hant-TW",
-				"Postman-Token: ff67721f-ed60-2ab8-37d2-e88c4c934af7"
+				"User-Agent: Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36"
 			),
 		));
 
