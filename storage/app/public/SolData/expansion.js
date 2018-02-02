@@ -7,11 +7,19 @@ window.clickedXPths = [];
 window.lastMouseOver = { dom: null, backgroundColor: null};
 
 function messageSender (data) {
-	window.parent.postMessage(data);
+	window.parent.postMessage(data, "*");
 }
 
 function receiveProcess (event) {
-	console.log(event.data)
+	switch (event.data['command']) {
+		case "return":
+			messageSender(window.clickedXPths);
+			break;
+		case "reset":
+			for (let i = window.clickedDoms.length-1; i >= 0; i--) {
+				popClickedEle(window.clickedDoms[i]);
+			}
+	}
 }
 
 function overDom (event) {
@@ -24,7 +32,6 @@ function overDom (event) {
 	overDom.dom.style.backgroundColor = "rgba(0, 204, 204, 0.2)";
 }
 
-
 function getClickedDomXPath (event) {
 	let currentClickedDom = event.target;
 	let exist = false;
@@ -36,20 +43,28 @@ function getClickedDomXPath (event) {
 	});
 	
 	if (exist) {
-		let index = window.clickedDoms.indexOf(currentClickedDom);
-		currentClickedDom.style.border = null;
-		currentClickedDom.style.borderColor = null;
-		event.target.style.borderStyle = null;
-		window.clickedDoms.splice(index, 1);
-		window.clickedXPths.splice(index, 1);
+		popClickedEle(currentClickedDom);
 		
 	} else {
-		event.target.style.border = '2px';
-		event.target.style.borderColor = '#ff6666';
-		event.target.style.borderStyle = 'solid';
-		window.clickedDoms.push(currentClickedDom);
-		window.clickedXPths.push(getXPath(currentClickedDom));
+		pushClickedEle(currentClickedDom);
 	}
+}
+
+function pushClickedEle (currentClickedDom) {
+	currentClickedDom.style.border = '2px';
+	currentClickedDom.style.borderColor = '#ff6666';
+	currentClickedDom.style.borderStyle = 'solid';
+	window.clickedDoms.push(currentClickedDom);
+	window.clickedXPths.push(getXPath(currentClickedDom));
+}
+
+function popClickedEle (currentClickedDom) {
+	let index = window.clickedDoms.indexOf(currentClickedDom);
+	currentClickedDom.style.border = null;
+	currentClickedDom.style.borderColor = null;
+	currentClickedDom.style.borderStyle = null;
+	window.clickedDoms.splice(index, 1);
+	window.clickedXPths.splice(index, 1);
 }
 
 function getXPath(node){
@@ -133,7 +148,7 @@ function getXPath(node){
 }
 
 function xpathRegex(xpath) {
-	let result = xpath.replace(/tbody(?<=tbody).*(?=\/tr)/gi, '');
+	let result = xpath.replace(/tbody(?<=tbody).*(?=\/tr)/gi, '\/');
 	return result.replace(/\/s/gi, '\/a');
 }
 

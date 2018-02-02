@@ -6,7 +6,7 @@
  * Time: 下午 06:10
  */
 
-namespace App\Http\Utils;
+namespace App\Utils;
 
 use \Illuminate\Support\Facades\Storage;
 

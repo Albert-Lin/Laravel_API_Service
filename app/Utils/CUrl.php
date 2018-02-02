@@ -7,7 +7,7 @@
  * Time: 上午 01:10
  */
 
-namespace App\Http\Utils;
+namespace App\Utils;
 
 class CUrl
 {

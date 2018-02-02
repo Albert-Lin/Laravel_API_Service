@@ -10,26 +10,34 @@ namespace App\Http\Controllers;
 
 
 use Illuminate\Http\Request;
-use App\Http\Utils\CUrl;
-use App\Http\Utils\LoadFile;
-
+use App\Service\SolDataService;
 class SolDataController extends Controller
 {
-	function getHTMLResource (Request $request) {
-		$url = $request['url'];
-		$expansionJs = (new LoadFile())->loadFileToStr('./public/SolData/expansion.js');
-		$htmlStr = (new CUrl())->exe($url);
-		$htmlStr = str_replace("</body>", "<script>".$expansionJs."</script></body>", $htmlStr);
-
-////		$li = [];
-////		preg_match("/(?<=<li).*(?=li>)/", $htmlStr, $li);
-//		$aTagArray = [];
-//		preg_match("/<a (?<=<a ).*(?=>)>/", $htmlStr, $aTagArray);
-//		foreach ($aTagArray as $key => $value) {
-//			$replaceValue = str_replace("<a ", "<s ", $value);
-//			$replaceValue = str_replace("/a", "/s", $replaceValue);
-//			$htmlStr = str_replace($value, $replaceValue, $replaceValue);
-//		}
-		return $htmlStr;
+	/**
+	 * @var SolDataService
+	 */
+	protected $soldataService;
+	
+	/**
+	 * SolDataController constructor.
+	 * @param SolDataService $soldataService
+	 */
+	public function __construct(SolDataService $soldataService)
+	{
+		$this->soldataService = new SolDataService();
 	}
+	
+	function getHTMLSource (Request $request) {
+		$url = $request['url'];
+//		return $this->soldataService->getHTMLSourceCode($url);
+		return "OK";
+	}
+	
+	function getHTMLSourceInJSON (Request $request) {
+		$url = $request['url'];
+		return response()->json([
+			'html' => $this->soldataService->getHTMLSourceCode($url)
+		]);
+	}
+	
 }
