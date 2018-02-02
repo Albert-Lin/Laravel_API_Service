@@ -5,6 +5,8 @@
 window.clickedDoms = [];
 window.clickedXPths = [];
 window.lastMouseOver = { dom: null, backgroundColor: null};
+window.ckeckingDoms = [];
+window.originCheckDomStyle = [];
 
 function messageSender (data) {
 	window.parent.postMessage(data, "*");
@@ -18,6 +20,24 @@ function receiveProcess (event) {
 		case "reset":
 			for (let i = window.clickedDoms.length-1; i >= 0; i--) {
 				popClickedEle(window.clickedDoms[i]);
+			}
+			window.ckeckingDoms.forEach((ele, index)=>{
+				ele.style = window.originCheckDomStyle[index];
+			});
+			window.ckeckingDoms = [];
+			break;
+		case "listPatternCheck":
+			let xpathPattern = event.data['pattern'];
+			console.log(xpathPattern);
+			if (xpathPattern) {
+				window.ckeckingDoms = getAllNodeWithXPath(xpathPattern);
+				window.originCheckDomStyle = [];
+				window.ckeckingDoms.forEach((ele, index)=>{
+					window.originCheckDomStyle.push(ele.style);
+					ele.style.border = '2px';
+					ele.style.borderColor = '#ff6666';
+					ele.style.borderStyle = 'solid';
+				});
 			}
 	}
 }
@@ -156,6 +176,17 @@ function eventRegister () {
 	window.addEventListener("message", receiveProcess);
 	window.addEventListener("click", getClickedDomXPath);
 	window.addEventListener("mouseover", overDom);
+}
+
+function getAllNodeWithXPath(xpath){
+	let result = [];
+	let nodes = document.evaluate(xpath, document, null, XPathResult.ANY_PATH, null);
+	let node;
+	while( (node = nodes.iterateNext()) ){
+		result.push(node);
+	}
+	
+	return result;
 }
 
 (function(){

@@ -7,7 +7,7 @@
  * Time: 下午 06:09
  */
 
-namespace App\Service;
+namespace App\Services;
 
 use App\Utils\CUrl;
 use App\Utils\LoadFile;
