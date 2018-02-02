@@ -19,5 +19,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 
 Route::prefix('soldata')->group(function () {
-	Route::post('html', 'SolDataController@getHTMLResource');
+	Route::get('html', 'SolDataController@getHTMLResource');
 });

@@ -74,14 +74,14 @@ function getXPath(node){
 				let childNum = parentElement.children.length;
 				let index = 0;
 				if(id.length > 0){
-					result += "[@id='"+id+"']";
+					result += " [@id='"+id+"']";
 				}
 				else if(childNum > 0){
 					for(let i = 0; i < childNum; i++){
 						if(parentElement.children[i].nodeName.toLowerCase() === tagName){
 							index++;
 							if(parentElement.children[i] === currentNode){
-								result += "["+index+"]";
+								result += " ["+index+"]";
 								break;
 							}
 						}
@@ -107,7 +107,7 @@ function getXPath(node){
 			let childNum = parentElement.children.length;
 			currentResult = "/"+currentResult;
 			if(id.length > 0){
-				currentResult += "[@id='"+id+"']";
+				currentResult += " [@id='"+id+"']";
 			}
 			else if(childNum > 0){
 				let index = 0;
@@ -116,7 +116,7 @@ function getXPath(node){
 						if(parentElement.children[i].nodeName.toLowerCase() === tagName){
 							index++;
 							if(parentElement.children[i] === currentNode){
-								currentResult += "["+index+"]";
+								currentResult += " ["+index+"]";
 								break;
 							}
 						}
@@ -128,13 +128,21 @@ function getXPath(node){
 		result = currentResult + result;
 		currentNode = parentElement;
 	}
-	
-	return "//"+result.replace(/tbody(?<=tbody).*(?=\/tr)/gi, '');
+
+	return "//"+xpathRegex(result);
 }
-window.addEventListener('click', function(event){ console.log(getXPath(event.target)); });
+
+function xpathRegex(xpath) {
+	let result = xpath.replace(/tbody(?<=tbody).*(?=\/tr)/gi, '');
+	return result.replace(/\/s/gi, '\/a');
+}
 
 function eventRegister () {
 	window.addEventListener("message", receiveProcess);
 	window.addEventListener("click", getClickedDomXPath);
 	window.addEventListener("mouseover", overDom);
 }
+
+(function(){
+	setTimeout(eventRegister, 1000);
+})();
