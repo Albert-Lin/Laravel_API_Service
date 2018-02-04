@@ -22,4 +22,5 @@ Route::prefix('soldata')->group(function () {
 	Route::get('html', 'SolDataController@getHTMLSource');
 	Route::get('html_json', 'SolDataController@getHTMLSourceInJSON');
 	Route::post('list_xpath_integration', 'SolDataController@listXPathIntegration');
+	Route::post('detail_page_url', 'SolDataController@getDetailPageUrl');
 });

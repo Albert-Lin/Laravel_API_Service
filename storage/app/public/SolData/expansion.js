@@ -2,11 +2,13 @@
  * Created by Albert Lin on 2018/2/1.
  */
 
-window.clickedDoms = [];
-window.clickedXPths = [];
-window.lastMouseOver = { dom: null, backgroundColor: null};
-window.ckeckingDoms = [];
-window.originCheckDomStyle = [];
+window.apiFrame = {
+	clickedDomList: [],
+	clickedXPaths: [],
+	lastMouseOver: { dom: null, backgroundColor: null},
+	checkingDomList: [],
+	originCheckDomStyle: []
+};
 
 function messageSender (data) {
 	window.parent.postMessage(data, "*");
@@ -15,25 +17,26 @@ function messageSender (data) {
 function receiveProcess (event) {
 	switch (event.data['command']) {
 		case "return":
-			messageSender(window.clickedXPths);
+			let column = event.data['column'];
+			messageSender(window.apiFrame[column]);
 			break;
 		case "reset":
-			for (let i = window.clickedDoms.length-1; i >= 0; i--) {
-				popClickedEle(window.clickedDoms[i]);
+			for (let i = window.apiFrame.clickedDomList.length-1; i >= 0; i--) {
+				popClickedEle(window.apiFrame.clickedDomList[i]);
 			}
-			window.ckeckingDoms.forEach((ele, index)=>{
-				ele.style = window.originCheckDomStyle[index];
+			window.apiFrame.checkingDomList.forEach((ele, index)=>{
+				ele.style = window.apiFrame.originCheckDomStyle[index];
 			});
-			window.ckeckingDoms = [];
+			window.apiFrame.checkingDomList = [];
 			break;
 		case "listPatternCheck":
 			let xpathPattern = event.data['pattern'];
 			console.log(xpathPattern);
 			if (xpathPattern) {
-				window.ckeckingDoms = getAllNodeWithXPath(xpathPattern);
-				window.originCheckDomStyle = [];
-				window.ckeckingDoms.forEach((ele, index)=>{
-					window.originCheckDomStyle.push(ele.style);
+				window.apiFrame.checkingDomList = getAllNodeWithXPath(xpathPattern);
+				window.apiFrame.originCheckDomStyle = [];
+				window.apiFrame.checkingDomList.forEach((ele, index)=>{
+					window.apiFrame.originCheckDomStyle.push(ele.style);
 					ele.style.border = '2px';
 					ele.style.borderColor = '#ff6666';
 					ele.style.borderStyle = 'solid';
@@ -43,7 +46,7 @@ function receiveProcess (event) {
 }
 
 function overDom (event) {
-	let overDom = window.lastMouseOver;
+	let overDom = window.apiFrame.lastMouseOver;
 	if (overDom.dom) {
 		overDom.dom.style.backgroundColor = overDom.backgroundColor;
 	}
@@ -55,7 +58,7 @@ function overDom (event) {
 function getClickedDomXPath (event) {
 	let currentClickedDom = event.target;
 	let exist = false;
-	window.clickedDoms.forEach((dom, index)=>{
+	window.apiFrame.clickedDomList.forEach((dom, index)=>{
 		if (currentClickedDom === dom) {
 			exist = true;
 			return false;
@@ -74,17 +77,17 @@ function pushClickedEle (currentClickedDom) {
 	currentClickedDom.style.border = '2px';
 	currentClickedDom.style.borderColor = '#ff6666';
 	currentClickedDom.style.borderStyle = 'solid';
-	window.clickedDoms.push(currentClickedDom);
-	window.clickedXPths.push(getXPath(currentClickedDom));
+	window.apiFrame.clickedDomList.push(currentClickedDom);
+	window.apiFrame.clickedXPaths.push(getXPath(currentClickedDom));
 }
 
 function popClickedEle (currentClickedDom) {
-	let index = window.clickedDoms.indexOf(currentClickedDom);
+	let index = window.apiFrame.clickedDomList.indexOf(currentClickedDom);
 	currentClickedDom.style.border = null;
 	currentClickedDom.style.borderColor = null;
 	currentClickedDom.style.borderStyle = null;
-	window.clickedDoms.splice(index, 1);
-	window.clickedXPths.splice(index, 1);
+	window.apiFrame.clickedDomList.splice(index, 1);
+	window.apiFrame.clickedXPaths.splice(index, 1);
 }
 
 function getXPath(node){
@@ -169,7 +172,7 @@ function getXPath(node){
 
 function xpathRegex(xpath) {
 	let result = xpath.replace(/tbody(?<=tbody).*(?=\/tr)/gi, '\/');
-	return result.replace(/\/s/gi, '\/a');
+	return result.replace(/\/s /gi, '\/a ');
 }
 
 function eventRegister () {
