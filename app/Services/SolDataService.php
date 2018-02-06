@@ -24,15 +24,20 @@ class SolDataService
 		// 03_1. include expansion JS
 		$htmlStr = str_replace("</body>", "<script>".$expansionJs."</script></body>", $htmlStr);
 		
-		// 03_2. replace <a> for redirect [disable now]
-//		$aTagArray = [];
-//		preg_match("/<a (?<=<a ).*(?=>)>/", $htmlStr, $aTagArray);
-//		foreach ($aTagArray as $key => $value) {
-//			$replaceValue = str_replace("<a ", "<s ", $value);
-//			$replaceValue = str_replace("/a", "/s", $replaceValue);
-//			$htmlStr = str_replace($value, $replaceValue, $htmlStr);
-//		}
 		
-		return $htmlStr;
+		// 03_3. add base url
+//		$htmlStr = str_replace("<head>", "<head> <base href='http://www.cna.com.tw'>", $htmlStr);
+		
+		
+		return $this->toUTF8($htmlStr);
+	}
+	
+	public function toUTF8 ($htmlStr) {
+		$output = [];
+		preg_match("/(?<=charset=).*?(?=>)/", $htmlStr, $output);
+		$encode = $output[0];
+		$encode = preg_replace("/\"/", "", $encode);
+		$encode = preg_replace("/\//", "", $encode);
+		return mb_convert_encoding($htmlStr, "UTF-8", $encode);
 	}
 }
